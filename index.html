@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Simulasi Monte Carlo - ASN</title>
+</head>
+
+<body>
+    <header>
+        <h1>Simulasi Prediksi Kenaikan Pangkat ASN</h1>
+    </header>
+    <main>
+        <!-- Tabel Data ASN -->
+        <section>
+            <h2>Data Kenaikan Pangkat ASN</h2>
+            <table>
+                <tr>
+                    <th>Tahun</th>
+                    <th>Jumlah ASN Naik Pangkat</th>
+                </tr>
+                {% for year, count in data.items() %}
+                <tr>
+                    <td>{{ year }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <!-- Tabel Prediksi -->
+        <section>
+            <h2>Prediksi Menggunakan Monte Carlo</h2>
+            <table>
+                <tr>
+                    <th>Iterasi</th>
+                    <th>Jumlah ASN (Prediksi)</th>
+                </tr>
+                {% for i, prediction in predictions %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td>{{ prediction }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+
+
+        <!-- Tombol untuk Generate Prediksi Baru -->
+        <section>
+            <button id="generateButton">Generate New Predictions</button>
+        </section>
+    </main>
+
+    <!-- Script untuk AJAX -->
+    <script>
+        document.getElementById('generateButton').addEventListener('click', function() {
+            fetch('/generate_predictions')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('predictionsTable');
+                    // Hapus semua baris kecuali header
+                    while (table.rows.length > 1) {
+                        table.deleteRow(1);
+                    }
+                    // Tambahkan baris baru
+                    data.predictions.forEach((prediction, index) => {
+                        const row = table.insertRow();
+                        row.innerHTML = `<td>${index + 1}</td><td>${prediction}</td>`;
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+
+</html>
